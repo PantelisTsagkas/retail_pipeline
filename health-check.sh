@@ -131,8 +131,6 @@ check_service "Pipeline Processing" "$processing_check" 20 || HEALTH_STATUS=1
 
 # Summary
 echo -e "\n📋 Health Check Summary:"
-echo -e "${GREEN}✅ All critical services are healthy${NC}"
-echo -e "${YELLOW}🚀 Retail Pipeline is ready for operation${NC}"
 echo
 echo "Services checked:"
 echo "  • Kafka message broker"
@@ -143,8 +141,9 @@ echo
 echo -e "${GREEN}🎉 System is fully operational!${NC}"
 
 if [ $HEALTH_STATUS -eq 0 ]; then
-    echo "✅ All critical services are healthy"
+    echo -e "${GREEN}✅ All critical services are healthy${NC}"
+    echo -e "${YELLOW}🚀 Retail Pipeline is ready for operation${NC}"
 else
-    echo "❌ One or more services are unhealthy"
+    echo -e "${RED}❌ One or more services are unhealthy${NC}"
 fi
 exit $HEALTH_STATUS

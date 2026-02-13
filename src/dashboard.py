@@ -7,8 +7,6 @@ import os
 
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://admin:password@mongodb:27017/")
 
-client = MongoClient(MONGODB_URI)
-
 st.set_page_config(layout="wide")
 st.title("Real-Time Retail Dashboard 🛒")
 

@@ -8,7 +8,6 @@ from pymongo import MongoClient
 import os
 
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://admin:password@mongodb:27017/")
-client = MongoClient(MONGODB_URI)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

@@ -1,4 +1,5 @@
 import json
+import os
 import time
 
 import pandas as pd
@@ -6,7 +7,7 @@ from kafka import KafkaProducer
 
 # Configuration
 KAFKA_TOPIC = "retail_transactions"
-KAFKA_SERVER = "kafka:9092"  # 'kafka' matches the service name in docker-compose
+KAFKA_SERVER = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 
 
 def json_serializer(data):

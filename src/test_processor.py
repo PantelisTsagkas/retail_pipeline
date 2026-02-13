@@ -22,12 +22,12 @@ except Exception as e:
 # Simple Kafka consumer (no consumer group)
 try:
     consumer = KafkaConsumer(
-        'retail_transactions',
-        bootstrap_servers='kafka:9092',
-        value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-        auto_offset_reset='earliest',
+        "retail_transactions",
+        bootstrap_servers="kafka:9092",
+        value_deserializer=lambda m: json.loads(m.decode("utf-8")),
+        auto_offset_reset="earliest",
         enable_auto_commit=False,  # Manually commit
-        consumer_timeout_ms=10000  # Timeout after 10 seconds of no messages
+        consumer_timeout_ms=10000,  # Timeout after 10 seconds of no messages
     )
     logger.info("Connected to Kafka successfully")
 except Exception as e:
@@ -45,35 +45,41 @@ try:
         try:
             # Get the data
             data = message.value
-            
+
             # Simple transformation: Calculate Total Amount
-            if 'Quantity' in data and 'UnitPrice' in data:
-                data['TotalAmount'] = data['Quantity'] * data['UnitPrice']
-            
+            if "Quantity" in data and "UnitPrice" in data:
+                data["TotalAmount"] = data["Quantity"] * data["UnitPrice"]
+
             # Add to batch
             batch.append(data)
             message_count += 1
-            
-            logger.info(f"Received message {message_count}: Invoice {data.get('InvoiceNo', 'Unknown')}")
-            
+
+            logger.info(
+                f"Received message {message_count}: Invoice {data.get('InvoiceNo', 'Unknown')}"
+            )
+
             # Process batch when it reaches batch_size
             if len(batch) >= batch_size:
                 # Insert batch to MongoDB
                 result = collection.insert_many(batch)
-                logger.info(f"✅ Inserted batch of {len(result.inserted_ids)} documents to MongoDB")
+                logger.info(
+                    f"✅ Inserted batch of {len(result.inserted_ids)} documents to MongoDB"
+                )
                 batch = []
-            
+
         except Exception as e:
             logger.error(f"Error processing message: {e}")
             continue
-            
+
 except Exception as e:
     logger.info(f"Consumer finished or timed out: {e}")
 
 # Process any remaining messages in batch
 if batch:
     result = collection.insert_many(batch)
-    logger.info(f"✅ Inserted final batch of {len(result.inserted_ids)} documents to MongoDB")
+    logger.info(
+        f"✅ Inserted final batch of {len(result.inserted_ids)} documents to MongoDB"
+    )
 
 logger.info(f"🎉 Processing complete! Total messages processed: {message_count}")
 

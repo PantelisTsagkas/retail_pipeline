@@ -85,11 +85,11 @@ jobs:
     
     - name: Build Docker images
       run: |
-        docker-compose build
+        docker compose build
     
     - name: Start services
       run: |
-        docker-compose up -d
+        docker compose up -d
         
     - name: Wait for services to be ready
       run: |
@@ -97,13 +97,13 @@ jobs:
         sleep 30
         
         # Check if services are running
-        docker-compose ps
+        docker compose ps
         
         # Test MongoDB connection
-        timeout 30 bash -c 'until docker-compose exec -T mongodb mongosh --eval "db.adminCommand(\"ping\")" > /dev/null 2>&1; do sleep 1; done'
+        timeout 30 bash -c 'until docker compose exec -T mongodb mongosh --eval "db.adminCommand(\"ping\")" > /dev/null 2>&1; do sleep 1; done'
         
         # Test Kafka connection
-        timeout 30 bash -c 'until docker-compose exec -T kafka kafka-topics --list --bootstrap-server kafka:9092 > /dev/null 2>&1; do sleep 1; done'
+        timeout 30 bash -c 'until docker compose exec -T kafka kafka-topics --list --bootstrap-server kafka:9092 > /dev/null 2>&1; do sleep 1; done'
     
     - name: Run integration tests
       run: |
@@ -114,17 +114,17 @@ jobs:
     - name: Test pipeline components
       run: |
         # Test producer
-        docker-compose exec -T app python src/producer.py
+        docker compose exec -T app python src/producer.py
         
         # Test processor
-        timeout 30 docker-compose exec -T app python src/test_processor.py || true
+        timeout 30 docker compose exec -T app python src/test_processor.py || true
         
         # Check if data was processed
-        docker-compose exec -T mongodb mongosh retail_db --eval "db.transactions.countDocuments({})"
+        docker compose exec -T mongodb mongosh retail_db --eval "db.transactions.countDocuments({})"
     
     - name: Cleanup
       run: |
-        docker-compose down -v
+        docker compose down -v
       if: always()
 
   # Security Scans

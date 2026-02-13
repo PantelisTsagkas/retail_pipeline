@@ -77,7 +77,7 @@ def run():
     except Exception as e:
         logger.info(f"Consumer finished or timed out: {e}")
 
-    # Flush any remaining messages
+    # Flush any remaining messages now
     if batch:
         result = collection.insert_many(batch)
         logger.info(

@@ -19,12 +19,21 @@ ENV JAVA_HOME=/usr/lib/jvm/default-java
 # Development stage
 FROM base as development
 
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
 # Install development dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
 COPY . .
+
+# Set ownership
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
 
 # Set Python path
 ENV PYTHONPATH=/app/src
@@ -39,18 +48,9 @@ FROM base as production
 # Create non-root user for security
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Copy only production requirements
+# Copy requirements and install all production dependencies
 COPY requirements.txt .
-
-# Install only production dependencies
-RUN pip install --no-cache-dir \
-    pandas \
-    kafka-python \
-    pymongo \
-    streamlit \
-    fastapi \
-    uvicorn \
-    python-dotenv \
+RUN pip install --no-cache-dir -r requirements.txt \
     && pip cache purge
 
 # Copy source code

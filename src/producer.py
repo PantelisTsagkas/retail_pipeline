@@ -33,8 +33,16 @@ df = df.dropna()  # specific cleanup
 
 print(f"Starting stream of {len(df)} records...")
 
-for index, row in df.iterrows():
+# Better — sleep once per batch
+BATCH_SIZE = 50
+for i, (index, row) in enumerate(df.iterrows()):
     record = row.to_dict()
     producer.send(KAFKA_TOPIC, record)
-    print(f"Sent: {record['InvoiceNo']}")
-    time.sleep(0.5)  # Simulate real-time delay (tweak this speed)
+    if i % BATCH_SIZE == 0:
+        producer.flush()
+        time.sleep(0.5)
+
+# Add at the end of producer.py
+producer.flush()
+producer.close()
+print("✅ All records sent successfully")

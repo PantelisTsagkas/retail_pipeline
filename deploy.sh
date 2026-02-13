@@ -73,7 +73,7 @@ check_requirements() {
     fi
     
     # Check Docker Compose
-    if ! command -v docker-compose &> /dev/null; then
+    if ! command -v docker compose &> /dev/null; then
         log_error "Docker Compose is not installed"
         exit 1
     fi
@@ -84,7 +84,7 @@ check_requirements() {
         "Dockerfile"
         "requirements.txt"
         "src/producer.py"
-        "src/test_processor.py"
+        "src/processor.py"
         "src/dashboard.py"
     )
     
@@ -163,14 +163,14 @@ deploy_services() {
     # Pull images if requested
     if [[ "$PULL_IMAGES" == "true" ]]; then
         log_info "Pulling latest images..."
-        docker-compose pull
+        docker compose pull
     fi
     
     # Start services
     if [[ "$DETACH" == "true" ]]; then
-        docker-compose up -d
+        docker compose up -d
     else
-        docker-compose up
+        docker compose up
     fi
     
     log_success "Services deployed successfully"
@@ -191,7 +191,7 @@ run_tests() {
         log_warning "Health check script not found, running basic checks..."
         
         # Basic connectivity tests
-        docker-compose exec -T app python -c "
+        docker compose exec -T app python -c "
 from kafka import KafkaProducer
 from pymongo import MongoClient
 import sys
@@ -224,10 +224,10 @@ show_logs() {
     
     if [[ -n "$service" ]]; then
         log_info "Showing logs for service: $service"
-        docker-compose logs -f "$service"
+        docker compose logs -f "$service"
     else
         log_info "Showing logs for all services"
-        docker-compose logs -f
+        docker compose logs -f
     fi
 }
 
@@ -238,7 +238,7 @@ show_status() {
     
     # Show running containers
     echo "📦 Running Containers:"
-    docker-compose ps
+    docker compose ps
     echo
     
     # Show resource usage
@@ -248,7 +248,7 @@ show_status() {
     
     # Show network info
     echo "🌐 Network Information:"
-    docker-compose exec -T app python -c "
+    docker compose exec -T app python -c "
 import socket
 kafka_host = socket.gethostbyname('kafka')
 mongo_host = socket.gethostbyname('mongodb')
@@ -262,7 +262,7 @@ cleanup() {
     log_info "Cleaning up resources..."
     
     # Stop and remove containers
-    docker-compose down --volumes --remove-orphans
+    docker compose down --volumes --remove-orphans
     
     # Remove unused images
     docker image prune -f

@@ -34,6 +34,8 @@ check_service() {
     fi
 }
 
+HEALTH_STATUS=0
+
 # Check Kafka
 echo -e "\n📡 Kafka Service:"
 kafka_check="python3 -c '
@@ -46,7 +48,7 @@ try:
 except:
     sys.exit(1)
 '"
-check_service "Kafka Connection" "$kafka_check" 15
+check_service "Kafka Connection" "$kafka_check" 15 || HEALTH_STATUS=1
 
 # Check MongoDB
 echo -e "\n💾 MongoDB Service:"
@@ -62,7 +64,14 @@ try:
 except:
     sys.exit(1)
 '"
-check_service "MongoDB Connection" "$mongo_check" 15
+check_service "MongoDB Connection" "$mongo_check" 15 || HEALTH_STATUS=1
+
+if [ $HEALTH_STATUS -eq 0 ]; then
+    echo "✅ All critical services are healthy"
+else
+    echo "❌ One or more services are unhealthy"
+fi
+exit $HEALTH_STATUS
 
 # Check MongoDB Database and Collection
 echo -e "\n📊 MongoDB Database:"

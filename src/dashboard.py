@@ -3,6 +3,10 @@ import time
 import pandas as pd
 import streamlit as st
 from pymongo import MongoClient
+import os
+
+MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://admin:password@mongodb:27017/")
+client = MongoClient(MONGODB_URI)
 
 st.set_page_config(layout="wide")
 st.title("Real-Time Retail Dashboard 🛒")
@@ -11,7 +15,7 @@ st.title("Real-Time Retail Dashboard 🛒")
 try:
     # Use MongoDB credentials from environment or defaults
     client = MongoClient(
-        "mongodb://admin:password@mongodb:27017/", serverSelectionTimeoutMS=5000
+        MONGODB_URI, serverSelectionTimeoutMS=5000
     )
     db = client["retail_db"]
     collection = db["transactions"]
@@ -66,3 +70,4 @@ while True:
         st.error(f"Error fetching data: {e}")
 
     time.sleep(2)
+    st.rerun()

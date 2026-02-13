@@ -14,36 +14,43 @@ def json_serializer(data):
     return json.dumps(data).encode("utf-8")
 
 
-producer = KafkaProducer(
-    bootstrap_servers=[KAFKA_SERVER], value_serializer=json_serializer
-)
+def load_data(filepath):
+    """Load CSV with fallback encoding handling."""
+    for encoding in ("utf-8", "latin-1", "iso-8859-1"):
+        try:
+            df = pd.read_csv(filepath, encoding=encoding)
+            if encoding != "utf-8":
+                print(f"Loaded with {encoding} encoding")
+            return df
+        except UnicodeDecodeError:
+            continue
+    raise ValueError(f"Could not read {filepath} with any supported encoding")
 
-print("Loading data...")
-# Load CSV with proper encoding handling
-try:
-    df = pd.read_csv("/app/data/Online_Retail.csv", encoding="utf-8")
-except UnicodeDecodeError:
-    try:
-        df = pd.read_csv("/app/data/Online_Retail.csv", encoding="latin-1")
-        print("Loaded with latin-1 encoding")
-    except UnicodeDecodeError:
-        df = pd.read_csv("/app/data/Online_Retail.csv", encoding="iso-8859-1")
-        print("Loaded with iso-8859-1 encoding")
 
-df = df.dropna()  # specific cleanup
+def run():
+    """Main entry point for the producer."""
+    producer = KafkaProducer(
+        bootstrap_servers=[KAFKA_SERVER], value_serializer=json_serializer
+    )
 
-print(f"Starting stream of {len(df)} records...")
+    print("Loading data...")
+    df = load_data("/app/data/Online_Retail.csv")
+    df = df.dropna()
 
-# Better — sleep once per batch
-BATCH_SIZE = 50
-for i, (index, row) in enumerate(df.iterrows()):
-    record = row.to_dict()
-    producer.send(KAFKA_TOPIC, record)
-    if i % BATCH_SIZE == 0:
-        producer.flush()
-        time.sleep(0.5)
+    print(f"Starting stream of {len(df)} records...")
 
-# Add at the end of producer.py
-producer.flush()
-producer.close()
-print("✅ All records sent successfully")
+    BATCH_SIZE = 50
+    for i, (index, row) in enumerate(df.iterrows()):
+        record = row.to_dict()
+        producer.send(KAFKA_TOPIC, record)
+        if i % BATCH_SIZE == 0:
+            producer.flush()
+            time.sleep(0.5)
+
+    producer.flush()
+    producer.close()
+    print("✅ All records sent successfully")
+
+
+if __name__ == "__main__":
+    run()

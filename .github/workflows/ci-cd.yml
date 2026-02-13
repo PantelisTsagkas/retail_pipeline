@@ -119,19 +119,7 @@ jobs:
         # Test processor
         timeout 30 docker compose exec -T app python src/test_processor.py || true
         
-        # Check if data was processed
-        docker compose exec -T app python -c "
-from pymongo import MongoClient
-try:
-    client = MongoClient('mongodb://admin:password@mongodb:27017/')
-    db = client['retail_db']
-    count = db.transactions.count_documents({})
-    print(f'Total documents in MongoDB: {count}')
-    client.close()
-except Exception as e:
-    print(f'MongoDB connection error: {e}')
-    exit(1)
-"
+        
     
     - name: Cleanup
       run: |

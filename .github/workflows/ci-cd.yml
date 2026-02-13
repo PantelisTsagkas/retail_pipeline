@@ -108,7 +108,7 @@ jobs:
     - name: Run integration tests
       run: |
         python -m pip install --upgrade pip
-        pip install pytest requests
+        pip install pytest requests pandas
         pytest tests/test_integration.py -v -k "not test_producer_to_kafka_flow"
     
     - name: Test pipeline components

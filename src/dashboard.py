@@ -1,7 +1,8 @@
-import streamlit as st
-import pandas as pd
-from pymongo import MongoClient
 import time
+
+import pandas as pd
+import streamlit as st
+from pymongo import MongoClient
 
 st.set_page_config(layout="wide")
 st.title("Real-Time Retail Dashboard 🛒")

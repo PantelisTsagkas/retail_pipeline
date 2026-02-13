@@ -1,6 +1,7 @@
-import pandas as pd
 import json
 import time
+
+import pandas as pd
 from kafka import KafkaProducer
 
 # Configuration

@@ -1,8 +1,9 @@
 import json
+import logging
 import time
+
 from kafka import KafkaConsumer
 from pymongo import MongoClient
-import logging
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

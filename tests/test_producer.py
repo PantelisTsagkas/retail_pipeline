@@ -1,9 +1,10 @@
-import pytest
 import json
-import pandas as pd
-from unittest.mock import Mock, patch, MagicMock
-import sys
 import os
+import sys
+from unittest.mock import MagicMock, Mock, patch
+
+import pandas as pd
+import pytest
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -38,8 +39,8 @@ class TestProducer:
         mock_kafka_producer.return_value = mock_producer_instance
 
         # Test producer configuration by importing the actual module
-        import sys
         import importlib
+        import sys
 
         if "producer" in sys.modules:
             importlib.reload(sys.modules["producer"])

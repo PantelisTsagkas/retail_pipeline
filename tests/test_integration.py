@@ -1,12 +1,13 @@
-import pytest
-import time
 import json
-import pandas as pd
-from unittest.mock import patch
-import subprocess
-import requests
-import sys
 import os
+import subprocess
+import sys
+import time
+from unittest.mock import patch
+
+import pandas as pd
+import pytest
+import requests
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))

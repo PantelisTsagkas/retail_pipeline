@@ -19,9 +19,9 @@ class TestIntegration:
     def test_docker_services_running(self):
         """Test that all required Docker services are running"""
         try:
-            # Check if docker-compose ps command works
+            # Check if docker compose ps command works
             result = subprocess.run(
-                ["docker-compose", "ps"], capture_output=True, text=True, timeout=10
+                ["docker","compose","ps"], capture_output=True, text=True, timeout=10
             )
 
             # Should not fail
@@ -52,7 +52,8 @@ class TestIntegration:
                 # Fallback: Try using docker command
                 result = subprocess.run(
                     [
-                        "docker-compose",
+                        "docker",
+                        "compose",
                         "exec",
                         "-T",
                         "kafka",
@@ -87,7 +88,8 @@ class TestIntegration:
                 # Fallback: Try using docker command
                 result = subprocess.run(
                     [
-                        "docker-compose",
+                        "docker",
+                        "compose",
                         "exec",
                         "-T",
                         "mongodb",
@@ -182,7 +184,7 @@ class TestEndToEndPipeline:
         try:
             # Run producer with a small dataset
             result = subprocess.run(
-                ["docker-compose", "exec", "-T", "app", "python", "src/producer.py"],
+                ["docker", "compose", "exec", "-T", "app", "python", "src/producer.py"],
                 capture_output=True,
                 text=True,
                 timeout=30,

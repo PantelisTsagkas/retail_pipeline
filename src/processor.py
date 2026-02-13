@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 # MongoDB connection
 try:
     # Use MongoDB credentials from environment or defaults
-    mongo_client = MongoClient("mongodb://admin:password@mongodb:27017/")
+    mongo_client = MongoClient(MONGODB_URI)
     db = mongo_client["retail_db"]
     collection = db["transactions"]
     logger.info("Connected to MongoDB successfully")
@@ -29,7 +29,7 @@ except Exception as e:
 try:
     consumer = KafkaConsumer(
         "retail_transactions",
-        bootstrap_servers="kafka:9092",
+        bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092"),
         value_deserializer=lambda m: json.loads(m.decode("utf-8")),
         auto_offset_reset="earliest",
         enable_auto_commit=False,  # Manually commit

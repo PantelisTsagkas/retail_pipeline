@@ -66,12 +66,7 @@ except:
 '"
 check_service "MongoDB Connection" "$mongo_check" 15 || HEALTH_STATUS=1
 
-if [ $HEALTH_STATUS -eq 0 ]; then
-    echo "✅ All critical services are healthy"
-else
-    echo "❌ One or more services are unhealthy"
-fi
-exit $HEALTH_STATUS
+
 
 # Check MongoDB Database and Collection
 echo -e "\n📊 MongoDB Database:"
@@ -91,12 +86,12 @@ except Exception as e:
     print(f\"Database check failed: {e}\")
     sys.exit(1)
 '"
-check_service "Database & Collection" "$db_check" 10
+check_service "Database & Collection" "$db_check" 10 || HEALTH_STATUS=1
 
 # Check if Streamlit app is reachable (if running in same network)
 echo -e "\n🌐 Streamlit Dashboard:"
 streamlit_check="curl -f http://$STREAMLIT_HOST/healthz 2>/dev/null || curl -f http://$STREAMLIT_HOST 2>/dev/null | grep -q 'Streamlit'"
-check_service "Streamlit Service" "$streamlit_check" 10
+check_service "Streamlit Service" "$streamlit_check" 10 || HEALTH_STATUS=1
 
 # Check data processing capability
 echo -e "\n⚙️  Data Processing:"
@@ -132,7 +127,7 @@ except Exception as e:
     print(f\"Processing check failed: {e}\")
     sys.exit(1)
 '"
-check_service "Pipeline Processing" "$processing_check" 20
+check_service "Pipeline Processing" "$processing_check" 20 || HEALTH_STATUS=1
 
 # Summary
 echo -e "\n📋 Health Check Summary:"
@@ -147,4 +142,9 @@ echo "  • Data processing pipeline"
 echo
 echo -e "${GREEN}🎉 System is fully operational!${NC}"
 
-exit 0
+if [ $HEALTH_STATUS -eq 0 ]; then
+    echo "✅ All critical services are healthy"
+else
+    echo "❌ One or more services are unhealthy"
+fi
+exit $HEALTH_STATUS

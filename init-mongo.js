@@ -24,7 +24,7 @@ db.createCollection('transactions', {
       required: ["InvoiceNo", "StockCode", "Description", "Quantity", "UnitPrice", "Country"],
       properties: {
         InvoiceNo: {
-          bsonType: ["int", "double"],
+          bsonType: ["int", "double", "string"],
           description: "Invoice number - required and must be number"
         },
         StockCode: {

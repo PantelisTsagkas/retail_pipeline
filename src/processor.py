@@ -80,9 +80,7 @@ def run():
     # Flush any remaining messages now
     if batch:
         result = collection.insert_many(batch)
-        logger.info(
-            f"✅ Inserted final batch of {len(result.inserted_ids)} documents"
-        )
+        logger.info(f"✅ Inserted final batch of {len(result.inserted_ids)} documents")
 
     logger.info(f"🎉 Processing complete! Total messages processed: {message_count}")
 

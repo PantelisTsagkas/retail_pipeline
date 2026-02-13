@@ -21,7 +21,7 @@ class TestIntegration:
         try:
             # Check if docker compose ps command works
             result = subprocess.run(
-                ["docker","compose","ps"], capture_output=True, text=True, timeout=10
+                ["docker", "compose", "ps"], capture_output=True, text=True, timeout=10
             )
 
             # Should not fail

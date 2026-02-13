@@ -1,9 +1,9 @@
+import os
 import time
 
 import pandas as pd
 import streamlit as st
 from pymongo import MongoClient
-import os
 
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://admin:password@mongodb:27017/")
 
@@ -13,9 +13,7 @@ st.title("Real-Time Retail Dashboard 🛒")
 # Connect to Mongo with error handling
 try:
     # Use MongoDB credentials from environment or defaults
-    client = MongoClient(
-        MONGODB_URI, serverSelectionTimeoutMS=5000
-    )
+    client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
     db = client["retail_db"]
     collection = db["transactions"]
     # Test the connection

@@ -210,30 +210,29 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-      if: ${{ secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' }}
+      continue-on-error: true
+      id: docker-login
     
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
-        push: true
+        push: ${{ steps.docker-login.outcome == 'success' }}
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/retail-pipeline:latest
           ${{ secrets.DOCKER_USERNAME }}/retail-pipeline:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-      if: ${{ secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' }}
     
-    - name: Skip Docker push (no credentials)
-      if: ${{ secrets.DOCKER_USERNAME == '' || secrets.DOCKER_PASSWORD == '' }}
+    - name: Docker push status
       run: |
-        echo "⚠️  Docker credentials not configured - skipping push"
-        echo "To enable Docker push, set DOCKER_USERNAME and DOCKER_PASSWORD secrets"
-    
-    - name: Deploy notification
-      run: |
-        echo "🚀 Deployment completed successfully!"
-        echo "Docker image: ${{ secrets.DOCKER_USERNAME }}/retail-pipeline:${{ github.sha }}"
+        if [ "${{ steps.docker-login.outcome }}" == "success" ]; then
+          echo "🚀 Docker image pushed successfully!"
+          echo "Image: ${{ secrets.DOCKER_USERNAME }}/retail-pipeline:${{ github.sha }}"
+        else
+          echo "⚠️  Docker credentials not configured - image built locally only"
+          echo "To enable Docker push, add DOCKER_USERNAME and DOCKER_PASSWORD secrets to your repository"
+        fi
 
   # Notification
   notify:

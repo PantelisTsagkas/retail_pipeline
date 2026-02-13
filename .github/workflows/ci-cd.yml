@@ -210,22 +210,22 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-      if: ${{ secrets.DOCKER_USERNAME && secrets.DOCKER_PASSWORD }}
+      if: secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != ''
     
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
-        push: ${{ secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' }}
+        push: true
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/retail-pipeline:latest
           ${{ secrets.DOCKER_USERNAME }}/retail-pipeline:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-      if: ${{ secrets.DOCKER_USERNAME && secrets.DOCKER_PASSWORD }}
+      if: secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != ''
     
     - name: Skip Docker push (no credentials)
-      if: ${{ !secrets.DOCKER_USERNAME || !secrets.DOCKER_PASSWORD }}
+      if: secrets.DOCKER_USERNAME == '' || secrets.DOCKER_PASSWORD == ''
       run: |
         echo "⚠️  Docker credentials not configured - skipping push"
         echo "To enable Docker push, set DOCKER_USERNAME and DOCKER_PASSWORD secrets"

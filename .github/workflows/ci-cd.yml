@@ -120,7 +120,7 @@ jobs:
         timeout 30 docker compose exec -T app python src/test_processor.py || true
         
         # Check if data was processed
-        docker compose exec -T mongodb mongosh retail_db --eval "db.transactions.countDocuments({})"
+        docker compose exec -T mongodb mongosh retail_db -u admin -p password --eval "db.transactions.countDocuments({})"
     
     - name: Cleanup
       run: |

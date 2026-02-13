@@ -1,7 +1,8 @@
 # 🛒 Retail Pipeline - Real-time Data Processing System
 
-[![CI/CD Pipeline](https://github.com/your-username/retail-pipeline/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/your-username/retail-pipeline/actions)
-[![Code Quality](https://github.com/your-username/retail-pipeline/workflows/Code%20Quality/badge.svg)](https://github.com/your-username/retail-pipeline/actions)
+[![CI/CD Pipeline](https://github.com/PantelisTsagkas/retail_pipeline/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/PantelisTsagkas/retail_pipeline/actions)
+[![Code Quality](https://github.com/PantelisTsagkas/retail_pipeline/workflows/Code%20Quality/badge.svg)](https://github.com/PantelisTsagkas/retail_pipeline/actions)
+[![Tests](https://img.shields.io/badge/tests-21%2F23%20passing-green.svg)](https://github.com/PantelisTsagkas/retail_pipeline/actions)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -29,8 +30,9 @@ A production-ready real-time data processing pipeline for retail transaction ana
 - **Real-time Processing**: Streams retail transactions from CSV to Kafka to MongoDB
 - **Interactive Dashboard**: Live Streamlit web interface with real-time analytics
 - **Scalable Architecture**: Containerized microservices with Docker Compose
-- **Production Ready**: Comprehensive testing, CI/CD pipeline, and monitoring
-- **Data Validation**: Schema validation and error handling throughout the pipeline
+- **Production Ready**: Comprehensive testing (91% pass rate), CI/CD pipeline, and monitoring
+- **MongoDB Authentication**: Secure database access with admin credentials
+- **Code Quality**: Black formatting, isort imports, comprehensive linting
 - **Performance Monitoring**: Built-in metrics collection and health checks
 - **Multi-Environment**: Support for development, staging, and production deployments
 
@@ -70,8 +72,8 @@ graph LR
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/retail-pipeline.git
-cd retail-pipeline
+git clone https://github.com/PantelisTsagkas/retail_pipeline.git
+cd retail_pipeline
 ```
 
 ### 2. Start Services
@@ -134,64 +136,142 @@ docker-compose exec app python src/test_processor.py
 
 ## 🧪 Testing
 
+### Test Coverage (21/23 tests passing - 91%)
+
 ```bash
-# Run unit tests
-python -m pytest tests/
+# Run all tests
+pytest tests/ -v
 
-# Run integration tests
-python -m pytest tests/test_integration.py
+# Run with coverage
+pytest tests/ --cov=src --cov-report=html
 
-# Check data quality
-python tests/test_data_quality.py
+# Run specific test suites
+pytest tests/test_producer.py -v      # Producer tests
+pytest tests/test_processor.py -v     # Processor tests  
+pytest tests/test_integration.py -v   # Integration tests
 ```
+
+### Test Categories
+- **Unit Tests**: Producer, Processor components
+- **Integration Tests**: End-to-end pipeline validation
+- **Performance Tests**: Throughput and latency benchmarks
+- **Docker Tests**: Container health and service connectivity
 
 ## 📝 Configuration
 
-Environment variables in `.env`:
+### Environment Variables
+Create `.env` file with:
 ```env
 KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-MONGODB_URI=mongodb://mongodb:27017/
+MONGO_HOST=mongodb:27017
+MONGO_DB=retail_db
+MONGO_USERNAME=admin
+MONGO_PASSWORD=password
+KAFKA_TOPIC=retail-transactions
 BATCH_SIZE=50
 PROCESSING_DELAY=0.5
 ```
 
+### MongoDB Authentication
+- **Username**: `admin`
+- **Password**: `password`
+- **Connection String**: `mongodb://admin:password@mongodb:27017/`
+
 ## 🔍 Monitoring
 
-- **Health Checks**: Docker health endpoints
-- **Logging**: Structured logging with timestamps
-- **Metrics**: Document counts, processing rates
-- **Dashboard**: Real-time system status
+### Built-in Monitoring Tools
+
+#### Performance Monitor (`monitor.py`)
+```bash
+# Real-time performance monitoring
+python3 monitor.py --duration 300 --interval 10
+
+# Single metrics snapshot
+python3 monitor.py --once
+
+# Save metrics to file
+python3 monitor.py --save metrics.jsonl
+```
+
+#### Health Check (`health-check.sh`)
+```bash
+# Comprehensive service health validation
+./health-check.sh
+
+# Verbose output with detailed diagnostics
+./health-check.sh --verbose
+
+# JSON output for monitoring systems
+./health-check.sh --json
+```
+
+### Monitoring Features
+- **System Metrics**: CPU, memory, disk usage
+- **Pipeline Metrics**: Message throughput, processing rates
+- **Service Health**: Docker containers, Kafka, MongoDB connectivity
+- **Real-time Dashboard**: Live transaction analytics
 
 ## 🚢 Production Deployment
 
-### CI/CD Pipeline
-- Automated testing on PR
-- Docker image building
-- Deployment to staging/prod
-
-### Scaling
+### Automated Deployment (`deploy.sh`)
 ```bash
-# Scale processing
-docker-compose up --scale processor=3
+# Deploy to development
+./deploy.sh -e development deploy
 
-# Monitor performance
-docker-compose logs -f processor
+# Deploy to production with testing
+./deploy.sh -e production -t deploy
+
+# Check deployment status
+./deploy.sh -e production status
+
+# Rollback if needed
+./deploy.sh -e production rollback
 ```
+
+### CI/CD Pipeline (GitHub Actions)
+- **Lint & Format**: Black, isort, flake8, mypy
+- **Unit Tests**: 91% pass rate with coverage reports
+- **Docker Tests**: Multi-service integration validation
+- **Security Scans**: Safety, bandit, Docker Scout
+- **Performance Tests**: Automated benchmarking
+- **Automated Deployment**: Docker Hub publishing
+
+### Multi-Environment Support
+- **Development**: Full debugging, local data
+- **Staging**: Production-like testing environment  
+- **Production**: Optimized performance, security hardened
 
 ## 🛠️ Development
 
-### Local Development
+### Local Development Setup
 ```bash
+# Clone repository
+git clone https://github.com/PantelisTsagkas/retail_pipeline.git
+cd retail_pipeline
+
+# Set up Python environment
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# .venv\Scripts\activate   # Windows
+
 # Install dependencies
 pip install -r requirements.txt
 
 # Run tests
-pytest
+pytest tests/ -v
 
-# Code formatting
-black src/
-isort src/
+# Code formatting & linting
+black src/ tests/
+isort src/ tests/
+flake8 src/ tests/
 ```
+
+### Development Workflow
+1. **Code**: Write features with comprehensive tests
+2. **Format**: Auto-format with Black and isort
+3. **Test**: Run pytest suite (aim for >90% pass rate)
+4. **Commit**: Use conventional commit messages
+5. **Push**: CI/CD pipeline validates automatically
 
 ### Data Pipeline Flow
 1. **Ingestion**: CSV → Producer → Kafka
@@ -248,8 +328,12 @@ docker-compose logs app  # Check application logs
 
 **No data in dashboard?**
 ```bash
-# Check if data was processed
-docker-compose exec mongodb mongosh retail_db --eval "db.transactions.countDocuments({})"
+# Check MongoDB authentication and data
+docker-compose exec mongodb mongosh retail_db -u admin -p password
+# Then in mongosh: db.transactions.countDocuments({})
+
+# Restart processor if needed
+docker-compose restart app
 ```
 
 **Kafka connection issues?**

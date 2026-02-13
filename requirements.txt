@@ -5,6 +5,7 @@ pyspark==3.3.0
 pymongo>=4.3.3
 psutil>=5.9.0
 streamlit>=1.28.0
+requests>=2.31.0
 
 # Web Framework
 fastapi>=0.104.0

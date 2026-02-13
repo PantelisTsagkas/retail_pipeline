@@ -109,7 +109,6 @@ jobs:
     
     - name: Run integration tests
       run: |
-        docker compose exec -T app pip install pytest requests pandas
         docker compose exec -T app pytest tests/test_integration.py -v \
           -k "not test_producer_to_kafka_flow and not test_kafka_connectivity and not test_mongodb_connectivity"
     
